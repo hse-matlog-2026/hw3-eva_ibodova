@@ -10,6 +10,7 @@ operators."""
 from propositions.syntax import *
 from propositions.semantics import *
 
+
 def to_not_and_or(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
     contains no constants or operators beyond ``'~'``, ``'&'``, and ``'|'``.
@@ -22,7 +23,20 @@ def to_not_and_or(formula: Formula) -> Formula:
         contains no constants or operators beyond ``'~'``, ``'&'``, and
         ``'|'``.
     """
-    # Task 3.5
+    subs = {
+        "T": Formula.parse("(p|~p)"),
+        "F": Formula.parse("(p&~p)"),
+        "->": Formula.parse("(~p|q)"),
+        "+": Formula.parse("((p&~q)|(~p&q))"),
+        "<->": Formula.parse("((p&q)|(~p&~q))"),
+        "-&": Formula.parse("~(p&q)"),
+        "-|": Formula.parse("~(p|q)")
+    }
+
+    ans = formula.substitute_operators(subs)
+
+    return ans
+
 
 def to_not_and(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -35,7 +49,25 @@ def to_not_and(formula: Formula) -> Formula:
         A formula that has the same truth table as the given formula, but
         contains no constants or operators beyond ``'~'`` and ``'&'``.
     """
-    # Task 3.6a
+    subs = {
+        "T": Formula.parse("(p|~p)"),
+        "F": Formula.parse("(p&~p)"),
+        "->": Formula.parse("(~p|q)"),
+        "+": Formula.parse("((p&~q)|(~p&q))"),
+        "<->": Formula.parse("((p&q)|(~p&~q))"),
+        "-&": Formula.parse("~(p&q)"),
+        "-|": Formula.parse("~(p|q)")
+    }
+
+    ans = formula.substitute_operators(subs)
+
+    subs = {
+        "|": Formula.parse("~(~p&~q)")
+    }
+    ans = ans.substitute_operators(subs)
+
+    return ans
+
 
 def to_nand(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -48,7 +80,20 @@ def to_nand(formula: Formula) -> Formula:
         A formula that has the same truth table as the given formula, but
         contains no constants or operators beyond ``'-&'``.
     """
-    # Task 3.6b
+    subs = {
+        "T": Formula.parse("(p-&(p-&p))"),
+        "F": Formula.parse("((p-&(p-&p))-&(p-&(p-&p)))"),
+        "~": Formula.parse("(p-&p)"),
+        "&": Formula.parse("((p-&q)-&(p-&q))"),
+        "|": Formula.parse("((p-&p)-&(q-&q))"),
+        "->": Formula.parse("(p-&(q-&q))"),
+        "+": Formula.parse("((p-&(p-&q))-&(q-&(p-&q)))"),
+        "<->": Formula.parse("(((p-&(p-&q))-&(q-&(p-&q)))-&((p-&(p-&q))-&(q-&(p-&q))))"),
+        "-|": Formula.parse("(((p-&p)-&(q-&q))-&((p-&p)-&(q-&q)))")
+    }
+
+    return formula.substitute_operators(subs)
+
 
 def to_implies_not(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -61,7 +106,19 @@ def to_implies_not(formula: Formula) -> Formula:
         A formula that has the same truth table as the given formula, but
         contains no constants or operators beyond ``'->'`` and ``'~'``.
     """
-    # Task 3.6c
+    subs = {
+        "T": Formula.parse("(p->p)"),
+        "F": Formula.parse("~(p->p)"),
+        "&": Formula.parse("~(p->~q)"),
+        "|": Formula.parse("(~p->q)"),
+        "+": Formula.parse("((p->q)->~(q->p))"),
+        "<->": Formula.parse("~((p->q)->~(q->p))"),
+        "-&": Formula.parse("(p->~q)"),
+        "-|": Formula.parse("~(~p->q)")
+    }
+
+    return formula.substitute_operators(subs)
+
 
 def to_implies_false(formula: Formula) -> Formula:
     """Syntactically converts the given formula to an equivalent formula that
@@ -74,4 +131,15 @@ def to_implies_false(formula: Formula) -> Formula:
         A formula that has the same truth table as the given formula, but
         contains no constants or operators beyond ``'->'`` and ``'F'``.
     """
-    # Task 3.6d
+    subs = {
+        "T": Formula.parse("(F->F)"),
+        "~": Formula.parse("(p->F)"),
+        "&": Formula.parse("((p->(q->F))->F)"),
+        "|": Formula.parse("((p->F)->q)"),
+        "+": Formula.parse("((p->q)->((q->p)->F))"),
+        "<->": Formula.parse("(((p->q)->((q->p)->F))->F)"),
+        "-&": Formula.parse("(p->(q->F))"),
+        "-|": Formula.parse("(((p->F)->q)->F)")
+    }
+
+    return formula.substitute_operators(subs)
